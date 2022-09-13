@@ -1,8 +1,8 @@
-import { Button, TextField } from "@mui/material";
-import axios from "axios";
+import { Box, Button, TextField, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import IRestaurante from "../../../interfaces/IRestaurante";
+import http from "../../../http";
 
 export default function FormularioRestaurante() {
   const [nomeRestaurante, setNomeRestaurante] = useState("");
@@ -11,10 +11,8 @@ export default function FormularioRestaurante() {
 
   useEffect(() => {
     if (params.id) {
-      axios
-        .get<IRestaurante>(
-          `http://localhost:8000/api/v2/restaurantes/${params.id}/`
-        )
+      http
+        .get<IRestaurante>(`restaurantes/${params.id}/`)
         .then((resposta) => setNomeRestaurante(resposta.data.nome));
     }
   }, [params]);
@@ -23,8 +21,8 @@ export default function FormularioRestaurante() {
     evento.preventDefault();
 
     if (params.id) {
-      axios
-        .put(`http://localhost:8000/api/v2/restaurantes/${params.id}/`, {
+      http
+        .put(`restaurantes/${params.id}/`, {
           nome: nomeRestaurante,
         })
         .then(() => {
@@ -34,8 +32,8 @@ export default function FormularioRestaurante() {
           alert("Erro ao Alterar Restaurante");
         });
     } else {
-      axios
-        .post("http://localhost:8000/api/v2/restaurantes/", {
+      http
+        .post("restaurantes/", {
           nome: nomeRestaurante,
         })
         .then(() => {
@@ -48,17 +46,39 @@ export default function FormularioRestaurante() {
   };
 
   return (
-    <form onSubmit={subFormulario}>
-      <TextField
-        value={nomeRestaurante}
-        onChange={(evento) => setNomeRestaurante(evento.target.value)}
-        id="standard"
-        label="Nome do Restaurante"
-        variant="standard"
-      />
-      <Button type="submit" variant="outlined">
-        CADASTRAR
-      </Button>
-    </form>
+    <>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          marginBottom: 6,
+        }}
+      >
+        <Typography component="h1" variant="h6">
+          {" "}
+          Formulario de restaurantes{" "}
+        </Typography>
+        <Box component="form" onSubmit={subFormulario}>
+          <TextField
+            value={nomeRestaurante}
+            onChange={(evento) => setNomeRestaurante(evento.target.value)}
+            id="standard"
+            label="Nome do Restaurante"
+            variant="standard"
+            fullWidth
+            required
+          />
+          <Button
+            sx={{ marginTop: 3 }}
+            fullWidth
+            type="submit"
+            variant="outlined"
+          >
+            CADASTRAR
+          </Button>
+        </Box>
+      </Box>
+    </>
   );
 }
